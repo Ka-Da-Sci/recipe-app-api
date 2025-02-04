@@ -15,11 +15,18 @@ WORKDIR /app
 
 # Copy dependencies file first to leverage Docker cache
 COPY requirements.txt /tmp/requirements.txt
+COPY requirements.dev.txt /tmp/requirements.dev.txt
+
+# Define the DEV argument (use again before RUN to optimize caching)
+ARG DEV=false
 
 # Install dependencies efficiently
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
+    if [ "$DEV" = "true" ];\
+        then pip install --no-cache-dir -r /tmp/requirements.dev.txt; \
+    fi &&\
     rm -rf /tmp
 
 # Copy the application code
