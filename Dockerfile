@@ -21,12 +21,14 @@ COPY requirements.dev.txt /tmp/requirements.dev.txt
 ARG DEV=false
 
 # Install dependencies efficiently
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN apk add --no-cache \
+        postgresql-client \
+        build-base \
+        postgresql-dev \
+        musl-dev && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
-    if [ "$DEV" = "true" ];\
-        then pip install --no-cache-dir -r /tmp/requirements.dev.txt; \
-    fi &&\
+    if [ "$DEV" = "true" ]; then pip install --no-cache-dir -r /tmp/requirements.dev.txt; fi && \
     rm -rf /tmp
 
 # Copy the application code
