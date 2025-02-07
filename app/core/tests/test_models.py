@@ -12,9 +12,11 @@ class ModelTests(TestCase):
 
         email = "karl@example.com"
         password = "pass12345"
+        name = "Test User"
         user = get_user_model().objects.create_user(
             email=email,
-            password=password
+            password=password,
+            name=name
         )
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))
@@ -30,19 +32,29 @@ class ModelTests(TestCase):
         ]
 
         for email, expected in sample_emails:
-            user = get_user_model().objects.create_user(email, 'sample0987')
-            self.assertEqual(user.email, expected)
+            with self.subTest(email=email):
+                user = get_user_model().objects.create_user(
+                       email, 'sample0987')
+                self.assertEqual(user.email, expected)
 
     def test_new_user_without_email(self):
         """Test creating user without email raises error."""
 
         with self.assertRaises(ValueError):
-            get_user_model().objects.create_user(None, 'saample5436')
+            get_user_model().objects.create_user('', 'saample5436')
+
+    def test_user_model_without_name(self):
+        """Test creating user without name raises error."""
+
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user(email='ekom@example.com',
+                                                 password='sample985jf',
+                                                 name='')
 
     def test_create_new_superuser(self):
         """Test creating a new superuser."""
 
         user = get_user_model().objects.create_superuser(
             'karl999@example.com', 'sample5nnvj6')
-        self.assertTrue(user.is_superuser)
-        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser, msg="Superuser flag should be True")
+        self.assertTrue(user.is_staff, msg="Staff flag should be True")
