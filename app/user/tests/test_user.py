@@ -85,7 +85,8 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_bad_credentials(self):
         """Test returns error if credentials invalid."""
-        create_user(email='testhnch4@example.com', password='kkmvmf9999')
+        create_user(email='testhnch4@example.com', password='kkmvmf9999',
+                    name='Test User')
 
         payload = {'email': 'testhnch4@example.com', 'password': 'itmkflflf9'}
         res = self.client.post(TOKEN_URL, payload)
@@ -118,7 +119,7 @@ class PrivateUserApiTests(TestCase):
             name='Captain Private',
         )
         self.client = APIClient()
-        self.client.force_login(user=self.user)
+        self.client.force_authenticate(user=self.user)
 
     def test_retrieve_profile_success(self):
         """Test retrieving profile for logged in user."""
@@ -135,7 +136,7 @@ class PrivateUserApiTests(TestCase):
         res = self.client.post(ME_URL, {})
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_update_user_profike(self):
+    def test_update_user_profile(self):
         """Test updating user profile for authenticated user."""
         payload = {'name': 'New Name', 'password': "NewPass3664"}
         res = self.client.patch(ME_URL, payload)
